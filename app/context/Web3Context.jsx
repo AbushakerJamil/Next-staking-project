@@ -43,7 +43,6 @@ export const useStaking = () => {
         stakeTokenContract.read.allowance([account, stakingAddress]),
       ]);
 
-      // stakeInfo tuple/array হতে পারে
       const stakedAmt = stakeInfo.stakedAmount || stakeInfo[0] || 0n;
       const rewards = stakeInfo.pendingRewards || stakeInfo[1] || 0n;
 

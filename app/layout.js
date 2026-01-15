@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Providers } from "./provider/Providers";
+import { ToastProvider } from "./context/ToastContext";
 
 // export const metadata = {
 //   title: "TSender",
@@ -14,8 +15,8 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-zinc-50">
         <Providers>
+          <ToastProvider>{children}</ToastProvider>
           {/* <Header /> */}
-          {children}
         </Providers>
       </body>
     </html>

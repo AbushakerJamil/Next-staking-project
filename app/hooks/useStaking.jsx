@@ -11,10 +11,12 @@ import {
 import { parseEther, formatEther } from "viem";
 import { STAKING_ABI, STAKING_TOKEN_ABI } from "../utils/contracts";
 import contractAddresses from "../utils/contractAddresses.json";
+import { useToast } from "../context/ToastContext";
 
 export const useStaking = () => {
   const { address: account, isConnected } = useConnection();
   const publicClient = usePublicClient();
+  const { notify } = useToast();
 
   const { writeContractAsync } = useWriteContract();
 
@@ -25,8 +27,6 @@ export const useStaking = () => {
   const [apy, setApy] = useState("0");
   const [allowance, setAllowance] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
-  const [txStatus, setTxStatus] = useState(null);
-  const [txMessage, setTxMessage] = useState("");
   const [currentTxHash, setCurrentTxHash] = useState(null);
 
   // Read token balance
@@ -125,15 +125,11 @@ export const useStaking = () => {
 
   // Handle transaction confirmation
   useEffect(() => {
-    if (isConfirming) {
-      setTxMessage("Waiting for confirmation...");
-    }
     if (isConfirmed) {
-      setTxStatus("success");
       setIsLoading(false);
       fetchStakingData();
     }
-  }, [isConfirming, isConfirmed]);
+  }, [isConfirmed]);
 
   // Fetch all staking data
   const fetchStakingData = useCallback(async () => {
@@ -178,9 +174,8 @@ export const useStaking = () => {
       return false;
     }
 
+    const toastId = notify.start("Approving tokens...");
     setIsLoading(true);
-    setTxStatus("pending");
-    setTxMessage("Approving tokens...");
 
     try {
       const amountWei = parseEther(amount.toString());
@@ -193,12 +188,12 @@ export const useStaking = () => {
       });
 
       setCurrentTxHash(hash);
-      setTxMessage("Tokens approved successfully");
+      notify.approve(toastId, "Tokens approved successfully!");
       return true;
     } catch (error) {
       console.error("Approve error:", error);
-      setTxStatus("error");
-      setTxMessage(
+      notify.fail(
+        toastId,
         error.shortMessage || error.message || "Failed to approve tokens"
       );
       setIsLoading(false);
@@ -213,9 +208,8 @@ export const useStaking = () => {
       return false;
     }
 
+    const toastId = notify.start("Staking tokens...");
     setIsLoading(true);
-    setTxStatus("pending");
-    setTxMessage("Staking tokens...");
 
     try {
       const amountWei = parseEther(amount.toString());
@@ -228,12 +222,12 @@ export const useStaking = () => {
       });
 
       setCurrentTxHash(hash);
-      setTxMessage(`Successfully staked ${amount} STK`);
+      notify.complete(toastId, `Successfully staked ${amount} STK`);
       return true;
     } catch (error) {
       console.error("Stake error:", error);
-      setTxStatus("error");
-      setTxMessage(
+      notify.fail(
+        toastId,
         error.shortMessage || error.message || "Failed to stake tokens"
       );
       setIsLoading(false);
@@ -248,9 +242,8 @@ export const useStaking = () => {
       return false;
     }
 
+    const toastId = notify.start("Withdrawing tokens...");
     setIsLoading(true);
-    setTxStatus("pending");
-    setTxMessage("Withdrawing tokens...");
 
     try {
       const amountWei = parseEther(amount.toString());
@@ -263,12 +256,12 @@ export const useStaking = () => {
       });
 
       setCurrentTxHash(hash);
-      setTxMessage(`Successfully withdrawn ${amount} STK`);
+      notify.complete(toastId, `Successfully withdrawn ${amount} STK`);
       return true;
     } catch (error) {
       console.error("Withdraw error:", error);
-      setTxStatus("error");
-      setTxMessage(
+      notify.fail(
+        toastId,
         error.shortMessage || error.message || "Failed to withdraw tokens"
       );
       setIsLoading(false);
@@ -283,9 +276,8 @@ export const useStaking = () => {
       return false;
     }
 
+    const toastId = notify.start("Claiming rewards...");
     setIsLoading(true);
-    setTxStatus("pending");
-    setTxMessage("Claiming rewards...");
 
     try {
       const hash = await writeContractAsync({
@@ -295,23 +287,17 @@ export const useStaking = () => {
       });
 
       setCurrentTxHash(hash);
-      setTxMessage("Successfully claimed rewards");
+      notify.complete(toastId, "Successfully claimed rewards");
       return true;
     } catch (error) {
       console.error("Claim error:", error);
-      setTxStatus("error");
-      setTxMessage(
+      notify.fail(
+        toastId,
         error.shortMessage || error.message || "Failed to claim rewards"
       );
       setIsLoading(false);
       return false;
     }
-  };
-
-  const clearTxStatus = () => {
-    setTxStatus(null);
-    setTxMessage("");
-    setCurrentTxHash(null);
   };
 
   const needsApproval = (amount) => {
@@ -330,8 +316,6 @@ export const useStaking = () => {
 
     // Status
     isLoading: isLoading || isConfirming,
-    txStatus,
-    txMessage,
 
     // Actions
     approveTokens,
@@ -339,7 +323,6 @@ export const useStaking = () => {
     withdrawTokens,
     claimRewards,
     fetchStakingData,
-    clearTxStatus,
     needsApproval,
   };
 };
