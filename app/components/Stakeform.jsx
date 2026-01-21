@@ -30,13 +30,10 @@ export default function StakeForm() {
   };
 
   const handleApprove = async () => {
-<<<<<<< HEAD
     // if (tokenBalance == 0) {
     //   alert("Your acount is low");
     //   return;
     // }
-=======
->>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
     if (!amount || parseFloat(amount) <= 0) {
       alert("Please enter a valid amount");
       return;
@@ -45,13 +42,10 @@ export default function StakeForm() {
   };
 
   const handleStake = async () => {
-<<<<<<< HEAD
     // if (tokenBalance == 0) {
     //   alert("Your acount is low");
     //   return;
     // }
-=======
->>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
     if (!amount || parseFloat(amount) <= 0) {
       alert("Please enter a valid amount");
       return;
@@ -63,13 +57,10 @@ export default function StakeForm() {
   };
 
   const handleUnstake = async () => {
-<<<<<<< HEAD
     // if (tokenBalance == 0) {
     //   alert("Your acount is low");
     //   return;
     // }
-=======
->>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
     if (!amount || parseFloat(amount) <= 0) {
       alert("Please enter a valid amount");
       return;
@@ -160,13 +151,10 @@ export default function StakeForm() {
             txStatus === "success"
               ? "bg-green-50 border border-green-200"
               : txStatus === "error"
-<<<<<<< HEAD
                 ? "bg-red-50 border border-red-200"
                 : "bg-blue-50 border border-blue-200"
-=======
-              ? "bg-red-50 border border-red-200"
-              : "bg-blue-50 border border-blue-200"
->>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
+                  ? "bg-red-50 border border-red-200"
+                  : "bg-blue-50 border border-blue-200"
           }`}
         >
           {txStatus === "success" && (
@@ -184,13 +172,10 @@ export default function StakeForm() {
                 txStatus === "success"
                   ? "text-green-700"
                   : txStatus === "error"
-<<<<<<< HEAD
                     ? "text-red-700"
                     : "text-blue-700"
-=======
-                  ? "text-red-700"
-                  : "text-blue-700"
->>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
+                      ? "text-red-700"
+                      : "text-blue-700"
               }`}
             >
               {txMessage}
