@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  useConnection,
+  useAccount,
   usePublicClient,
   useReadContract,
   useWriteContract,
@@ -14,7 +14,7 @@ import contractAddresses from "../utils/contractAddresses.json";
 import { useToast } from "../context/ToastContext";
 
 export const useStaking = () => {
-  const { address: account, isConnected } = useConnection();
+  const { address: account, isConnected } = useAccount();
   const publicClient = usePublicClient();
   const { notify } = useToast();
 
@@ -28,6 +28,7 @@ export const useStaking = () => {
   const [allowance, setAllowance] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
   const [currentTxHash, setCurrentTxHash] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
 
   // Read token balance
   const { data: balanceData, refetch: refetchBalance } = useReadContract({
@@ -93,6 +94,7 @@ export const useStaking = () => {
   useEffect(() => {
     if (balanceData) {
       setTokenBalance(formatEther(balanceData));
+      setLastUpdated(Date.now());
     }
   }, [balanceData]);
 
@@ -102,12 +104,14 @@ export const useStaking = () => {
       const rewards = stakeInfoData.pendingRewards || stakeInfoData[1] || 0n;
       setStakedAmount(formatEther(stakedAmt));
       setPendingRewards(formatEther(rewards));
+      setLastUpdated(Date.now());
     }
   }, [stakeInfoData]);
 
   useEffect(() => {
     if (totalStakedData) {
       setTotalStaked(formatEther(totalStakedData));
+      setLastUpdated(Date.now());
     }
   }, [totalStakedData]);
 
@@ -156,21 +160,121 @@ export const useStaking = () => {
     refetchAllowance,
   ]);
 
-  // Auto-refresh every 10 seconds for rewards update
+  // Auto-refresh every 3 seconds
   useEffect(() => {
     if (!isConnected) return;
 
     const interval = setInterval(() => {
       refetchStakeInfo();
-    }, 10000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [isConnected, refetchStakeInfo]);
 
+  const isUserRejection = (error) => {
+    const errorMessage = error.message || error.shortMessage || "";
+    return (
+      errorMessage.includes("User rejected") ||
+      errorMessage.includes("User denied") ||
+      errorMessage.includes("user rejected") ||
+      errorMessage.includes("denied transaction") ||
+      error.code === 4001 ||
+      error.code === "ACTION_REJECTED"
+    );
+  };
+
+  const getErrorMessage = (error, defaultMessage) => {
+    const errorMsg = error.message || error.shortMessage || "";
+
+    // User rejected
+    if (isUserRejection(error)) {
+      return "Transaction cancelled by user";
+    }
+
+    // Insufficient balance
+    if (
+      errorMsg.includes("insufficient funds") ||
+      errorMsg.includes("insufficient balance")
+    ) {
+      return "Insufficient balance for this transaction";
+    }
+
+    // Insufficient gas
+    if (
+      errorMsg.includes("insufficient funds for gas") ||
+      errorMsg.includes("gas required exceeds")
+    ) {
+      return "Insufficient ETH for gas fees";
+    }
+
+    // Invalid amount
+    if (
+      errorMsg.includes("invalid amount") ||
+      errorMsg.includes("amount must be greater")
+    ) {
+      return "Invalid amount entered";
+    }
+
+    // Not enough tokens to stake
+    if (errorMsg.includes("ERC20: transfer amount exceeds balance")) {
+      return "Insufficient token balance";
+    }
+
+    // Not enough staked to withdraw
+    if (
+      errorMsg.includes("Insufficient staked amount") ||
+      errorMsg.includes("withdraw amount exceeds")
+    ) {
+      return "Insufficient staked amount to withdraw";
+    }
+
+    // Approval required
+    if (errorMsg.includes("ERC20: insufficient allowance")) {
+      return "Please approve tokens first";
+    }
+
+    // Contract error
+    if (errorMsg.includes("execution reverted")) {
+      return "Transaction failed: Contract error";
+    }
+
+    // Network error
+    if (errorMsg.includes("network") || errorMsg.includes("connection")) {
+      return "Network error. Please check your connection";
+    }
+
+    // Gas estimation failed
+    if (errorMsg.includes("gas estimation failed")) {
+      return "Transaction would fail. Please check your balance";
+    }
+
+    // Nonce too low
+    if (errorMsg.includes("nonce too low")) {
+      return "Transaction nonce error. Please try again";
+    }
+
+    // Replacement transaction underpriced
+    if (errorMsg.includes("replacement transaction underpriced")) {
+      return "Previous transaction pending. Please wait";
+    }
+
+    // Default message with short error if available
+    if (error.shortMessage && error.shortMessage !== errorMsg) {
+      return error.shortMessage;
+    }
+
+    return defaultMessage;
+  };
+
   // Approve tokens for staking
   const approveTokens = async (amount) => {
     if (!account || !isConnected) {
-      console.error("Wallet not connected");
+      notify.fail(null, "Please connect your wallet first");
+      return false;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      notify.fail(null, "Please enter a valid amount");
       return false;
     }
 
@@ -191,11 +295,13 @@ export const useStaking = () => {
       notify.approve(toastId, "Tokens approved successfully!");
       return true;
     } catch (error) {
-      console.error("Approve error:", error);
-      notify.fail(
-        toastId,
-        error.shortMessage || error.message || "Failed to approve tokens"
-      );
+      if (!isUserRejection(error)) {
+        console.error("Approve error:", error);
+      }
+
+      const errorMessage = getErrorMessage(error, "Failed to approve tokens");
+      notify.fail(toastId, errorMessage);
+
       setIsLoading(false);
       return false;
     }
@@ -204,7 +310,20 @@ export const useStaking = () => {
   // Stake tokens
   const stakeTokens = async (amount) => {
     if (!account || !isConnected) {
-      console.error("Wallet not connected");
+      notify.fail(null, "Please connect your wallet first");
+      return false;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      notify.fail(null, "Please enter a valid amount");
+      return false;
+    }
+
+    if (parseFloat(amount) > parseFloat(tokenBalance)) {
+      notify.fail(
+        null,
+        `Insufficient balance. You have ${parseFloat(tokenBalance).toFixed(2)} STK`,
+      );
       return false;
     }
 
@@ -225,11 +344,13 @@ export const useStaking = () => {
       notify.complete(toastId, `Successfully staked ${amount} STK`);
       return true;
     } catch (error) {
-      console.error("Stake error:", error);
-      notify.fail(
-        toastId,
-        error.shortMessage || error.message || "Failed to stake tokens"
-      );
+      if (!isUserRejection(error)) {
+        console.error("Stake error:", error);
+      }
+
+      const errorMessage = getErrorMessage(error, "Failed to stake tokens");
+      notify.fail(toastId, errorMessage);
+
       setIsLoading(false);
       return false;
     }
@@ -238,7 +359,20 @@ export const useStaking = () => {
   // Withdraw staked tokens
   const withdrawTokens = async (amount) => {
     if (!account || !isConnected) {
-      console.error("Wallet not connected");
+      notify.fail(null, "Please connect your wallet first");
+      return false;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      notify.fail(null, "Please enter a valid amount");
+      return false;
+    }
+
+    if (parseFloat(amount) > parseFloat(stakedAmount)) {
+      notify.fail(
+        null,
+        `Insufficient staked amount. You have ${parseFloat(stakedAmount).toFixed(2)} STK staked`,
+      );
       return false;
     }
 
@@ -259,11 +393,13 @@ export const useStaking = () => {
       notify.complete(toastId, `Successfully withdrawn ${amount} STK`);
       return true;
     } catch (error) {
-      console.error("Withdraw error:", error);
-      notify.fail(
-        toastId,
-        error.shortMessage || error.message || "Failed to withdraw tokens"
-      );
+      if (!isUserRejection(error)) {
+        console.error("Withdraw error:", error);
+      }
+
+      const errorMessage = getErrorMessage(error, "Failed to withdraw tokens");
+      notify.fail(toastId, errorMessage);
+
       setIsLoading(false);
       return false;
     }
@@ -272,7 +408,12 @@ export const useStaking = () => {
   // Claim rewards
   const claimRewards = async () => {
     if (!account || !isConnected) {
-      console.error("Wallet not connected");
+      notify.fail(null, "Please connect your wallet first");
+      return false;
+    }
+
+    if (parseFloat(pendingRewards) <= 0) {
+      notify.fail(null, "No rewards to claim");
       return false;
     }
 
@@ -287,14 +428,19 @@ export const useStaking = () => {
       });
 
       setCurrentTxHash(hash);
-      notify.complete(toastId, "Successfully claimed rewards");
+      notify.complete(
+        toastId,
+        `Successfully claimed ${parseFloat(pendingRewards).toFixed(4)} STK rewards`,
+      );
       return true;
     } catch (error) {
-      console.error("Claim error:", error);
-      notify.fail(
-        toastId,
-        error.shortMessage || error.message || "Failed to claim rewards"
-      );
+      if (!isUserRejection(error)) {
+        console.error("Claim error:", error);
+      }
+
+      const errorMessage = getErrorMessage(error, "Failed to claim rewards");
+      notify.fail(toastId, errorMessage);
+
       setIsLoading(false);
       return false;
     }
@@ -313,6 +459,7 @@ export const useStaking = () => {
     totalStaked,
     apy,
     allowance,
+    lastUpdated,
 
     // Status
     isLoading: isLoading || isConfirming,

@@ -60,7 +60,6 @@ export const useStaking = () => {
   useEffect(() => {
     fetchStakingData();
 
-    // Refresh every 10 seconds for rewards update
     const interval = setInterval(fetchStakingData, 10000);
     return () => clearInterval(interval);
   }, [fetchStakingData]);
@@ -113,7 +112,7 @@ export const useStaking = () => {
       console.error("Approve error:", error);
       setTxStatus("error");
       setTxMessage(
-        error.shortMessage || error.message || "Failed to approve tokens"
+        error.shortMessage || error.message || "Failed to approve tokens",
       );
       return false;
     } finally {
@@ -152,7 +151,7 @@ export const useStaking = () => {
       console.error("Stake error:", error);
       setTxStatus("error");
       setTxMessage(
-        error.shortMessage || error.message || "Failed to stake tokens"
+        error.shortMessage || error.message || "Failed to stake tokens",
       );
       return false;
     } finally {
@@ -191,7 +190,7 @@ export const useStaking = () => {
       console.error("Withdraw error:", error);
       setTxStatus("error");
       setTxMessage(
-        error.shortMessage || error.message || "Failed to withdraw tokens"
+        error.shortMessage || error.message || "Failed to withdraw tokens",
       );
       return false;
     } finally {
@@ -228,7 +227,7 @@ export const useStaking = () => {
       console.error("Claim error:", error);
       setTxStatus("error");
       setTxMessage(
-        error.shortMessage || error.message || "Failed to claim rewards"
+        error.shortMessage || error.message || "Failed to claim rewards",
       );
       return false;
     } finally {

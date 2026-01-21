@@ -1,6 +1,6 @@
 import "./globals.css";
-import { Providers } from "./provider/Providers";
-import { ToastProvider } from "./context/ToastContext";
+import { Providers } from "../app/provider/providers";
+import { ToastProvider } from "../app/context/ToastContext";
 
 // export const metadata = {
 //   title: "TSender",
