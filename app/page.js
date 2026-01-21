@@ -1,4 +1,5 @@
 "use client";
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import Navbar from "../app/components/Navbar";
@@ -9,6 +10,14 @@ import PoolStats from "../app/components/Poolstats";
 import Footer from "../app/components/Footer";
 import ConnectWalletPrompt from "../app/components/Connectwalletprompt";
 import AdminPanel from "./components/Adminpanel";
+=======
+import { useState } from "react";
+
+import Navbar from "./components/Navbar";
+import ConnectWalletPrompt from "./components/Connectwalletprompt";
+import StatsCard from "./components/StatsCard";
+import StakeForm from "./components/Stakeform";
+>>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
 
 export default function Home() {
   const { isConnected } = useAccount();
@@ -25,6 +34,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navbar />
+<<<<<<< HEAD
 
       {!isConnected ? (
         <ConnectWalletPrompt />
@@ -103,6 +113,12 @@ export default function Home() {
       )}
 
       <Footer />
+=======
+      <ConnectWalletPrompt />
+
+      <StatsCard />
+      <StakeForm />
+>>>>>>> 63cda52d44acd3b3715f1af82226bdc7cc75cf8c
     </div>
   );
 }
