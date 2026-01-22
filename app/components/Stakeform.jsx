@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useStaking } from "../hooks/useStaking";
 import { ArrowDown, ArrowUp, Check, AlertCircle, Loader2 } from "lucide-react";
+import { useAdmin } from "./useAdmin";
 
 export default function StakeForm() {
   const {
@@ -14,9 +15,9 @@ export default function StakeForm() {
     isLoading,
     txStatus,
     txMessage,
-    clearTxStatus,
     needsApproval,
   } = useStaking();
+  const { clearTxStatus } = useAdmin();
 
   const [amount, setAmount] = useState("");
   const [activeTab, setActiveTab] = useState("stake"); // 'stake' or 'unstake'
