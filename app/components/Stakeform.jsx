@@ -20,7 +20,7 @@ export default function StakeForm() {
   const { clearTxStatus } = useAdmin();
 
   const [amount, setAmount] = useState("");
-  const [activeTab, setActiveTab] = useState("stake"); // 'stake' or 'unstake'
+  const [activeTab, setActiveTab] = useState("stake");
 
   const handleMaxBalance = () => {
     if (activeTab === "stake") {

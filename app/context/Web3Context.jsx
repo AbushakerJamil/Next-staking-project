@@ -20,7 +20,6 @@ export const useStaking = () => {
   const [txStatus, setTxStatus] = useState(null);
   const [txMessage, setTxMessage] = useState("");
 
-  // Fetch all staking data
   const fetchStakingData = useCallback(async () => {
     if (!isConnected || !stakeTokenContract || !stakingContract || !account) {
       return;
@@ -64,7 +63,6 @@ export const useStaking = () => {
     return () => clearInterval(interval);
   }, [fetchStakingData]);
 
-  // Wait for transaction
   const waitForTransaction = async (hash) => {
     if (!publicClient) throw new Error("Public client not available");
 
@@ -76,7 +74,6 @@ export const useStaking = () => {
     return receipt;
   };
 
-  // Approve tokens for staking
   const approveTokens = async (amount) => {
     if (!stakeTokenContract || !stakingContract) {
       console.error("Contracts not initialized");
@@ -120,7 +117,6 @@ export const useStaking = () => {
     }
   };
 
-  // Stake tokens
   const stakeTokens = async (amount) => {
     if (!stakingContract) {
       console.error("Staking contract not initialized");
@@ -159,7 +155,6 @@ export const useStaking = () => {
     }
   };
 
-  // Withdraw staked tokens
   const withdrawTokens = async (amount) => {
     if (!stakingContract) {
       console.error("Staking contract not initialized");
@@ -198,7 +193,6 @@ export const useStaking = () => {
     }
   };
 
-  // Claim rewards
   const claimRewards = async () => {
     if (!stakingContract) {
       console.error("Staking contract not initialized");
@@ -254,12 +248,10 @@ export const useStaking = () => {
     apy,
     allowance,
 
-    // Status
     isLoading,
     txStatus,
     txMessage,
 
-    // Actions
     approveTokens,
     stakeTokens,
     withdrawTokens,

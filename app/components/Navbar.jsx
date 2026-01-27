@@ -13,7 +13,6 @@ export default function Navbar() {
     <nav className="bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex items-center space-x-2">
             <Coins className="h-8 w-8 text-white" />
             <span className="text-white text-xl font-bold hidden sm:block">
@@ -24,7 +23,6 @@ export default function Navbar() {
             </span>
           </div>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <a
               href="#stake"
@@ -47,7 +45,6 @@ export default function Navbar() {
             <ConnectButton />
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
             <div className="scale-75">
               <ConnectButton showBalance={false} />
@@ -61,7 +58,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2">
             <a

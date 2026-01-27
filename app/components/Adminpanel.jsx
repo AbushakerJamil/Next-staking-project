@@ -21,14 +21,13 @@ export default function AdminPanel() {
     isLoading,
     txStatus,
     txMessage,
-    // approveTokens,
     transferTokens,
     transferFrom,
     mintTokens,
     clearTxStatus,
   } = useAdmin();
 
-  const [activeTab, setActiveTab] = useState("approve"); // approve, transfer, transferFrom, mint
+  const [activeTab, setActiveTab] = useState("approve");
   const [spenderAddress, setSpenderAddress] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [fromAddress, setFromAddress] = useState("");
@@ -46,7 +45,6 @@ export default function AdminPanel() {
   //   setAmount("");
   // };
 
-  // Handle Transfer
   const handleTransfer = async () => {
     if (!recipientAddress || !amount) {
       alert("Please fill all fields");
@@ -57,7 +55,6 @@ export default function AdminPanel() {
     setAmount("");
   };
 
-  // Handle TransferFrom
   const handleTransferFrom = async () => {
     if (!fromAddress || !toAddress || !amount) {
       alert("Please fill all fields");
@@ -69,7 +66,6 @@ export default function AdminPanel() {
     setAmount("");
   };
 
-  // Handle Mint
   const handleMint = async () => {
     if (!recipientAddress || !amount) {
       alert("Please fill all fields");
@@ -80,7 +76,6 @@ export default function AdminPanel() {
     setAmount("");
   };
 
-  // If not connected
   if (!isConnected) {
     return (
       <div className="max-w-4xl mx-auto p-4">
@@ -97,7 +92,6 @@ export default function AdminPanel() {
     );
   }
 
-  // If not owner
   if (!isOwner) {
     return (
       <div className="max-w-4xl mx-auto p-4">
@@ -121,7 +115,6 @@ export default function AdminPanel() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg p-6 mb-6 text-white">
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-8 h-8" />
@@ -135,7 +128,6 @@ export default function AdminPanel() {
         )}
       </div>
 
-      {/* Tabs */}
       <div className="bg-white rounded-xl shadow-lg mb-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 p-2">
           {/* <button
@@ -208,9 +200,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* Forms */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        {/* Transaction Status */}
         {txStatus && (
           <div
             className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
@@ -252,7 +242,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Transfer Form */}
         {activeTab === "transfer" && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
@@ -310,7 +299,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* TransferFrom Form */}
         {activeTab === "transferFrom" && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
@@ -382,7 +370,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Mint Form */}
         {activeTab === "mint" && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
@@ -440,7 +427,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Info Box */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">
             ⚠️ Important Notes

@@ -20,7 +20,7 @@ export default function Home() {
   }, []);
 
   if (!mounted) {
-    return null; // or a skeleton loader
+    return null;
   }
 
   return (
@@ -36,9 +36,7 @@ export default function Home() {
             <StatsCard />
           </section>
 
-          {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Stake Form - Takes 2 columns on large screens */}
             <div className="lg:col-span-2" id="stake">
               <StakeForm />
             </div>
@@ -56,7 +54,6 @@ export default function Home() {
           <section>
             <PoolStats />
           </section>
-          {/* Additional Info Section */}
           <section className="mt-8 bg-white rounded-xl shadow-lg p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               How It Works
@@ -101,6 +98,8 @@ export default function Home() {
           </section>
         </main>
       )}
+
+      <Footer />
     </div>
   );
 }

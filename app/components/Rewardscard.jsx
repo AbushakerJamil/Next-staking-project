@@ -40,7 +40,6 @@ export default function RewardsCard() {
         </div>
       </div>
 
-      {/* Transaction Status */}
       {txStatus && (
         <div className="mb-4 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
           <div className="flex items-center justify-between">
@@ -60,7 +59,6 @@ export default function RewardsCard() {
         </div>
       )}
 
-      {/* Claim Button */}
       <button
         onClick={handleClaim}
         disabled={isLoading || parseFloat(pendingRewards) <= 0}
@@ -79,7 +77,6 @@ export default function RewardsCard() {
         )}
       </button>
 
-      {/* Info */}
       <div className="mt-4 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
         <p className="text-xs sm:text-sm opacity-90">
           💡 Rewards are calculated based on your staked amount and the current

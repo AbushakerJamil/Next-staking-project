@@ -5,7 +5,6 @@ import toast, { Toaster } from "react-hot-toast";
 
 const ToastContext = createContext();
 
-// 🎨 Modern Color Palette
 const COLORS = {
   processing: {
     gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -99,7 +98,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Approve
   const showApprove = (message) => {
     return toast.success(message, {
       style: createToastStyle("approve"),
@@ -108,7 +106,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Complete
   const showComplete = (message) => {
     return toast.success(message, {
       style: createToastStyle("complete"),
@@ -117,7 +114,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Success
   const showSuccess = (message) => {
     return toast.success(message, {
       style: createToastStyle("success"),
@@ -126,7 +122,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Reject
   const showReject = (message) => {
     return toast.error(message, {
       style: createToastStyle("reject"),
@@ -135,7 +130,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Failed
   const showFailed = (message) => {
     return toast.error(message, {
       style: createToastStyle("failed"),
@@ -144,7 +138,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Error
   const showError = (message) => {
     return toast.error(message, {
       style: createToastStyle("error"),
@@ -153,7 +146,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Info
   const showInfo = (message) => {
     return toast(message, {
       style: createToastStyle("info"),
@@ -162,7 +154,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Warning
   const showWarning = (message) => {
     return toast(message, {
       style: createToastStyle("warning"),
@@ -171,7 +162,6 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
-  // Update Toast
   const updateToast = (id, state, message) => {
     toast.dismiss(id);
 

@@ -22,7 +22,6 @@ export const useAdmin = () => {
   const [txMessage, setTxMessage] = useState("");
   const [currentTxHash, setCurrentTxHash] = useState(null);
 
-  // Read owner address from contract
   const { data: ownerAddress } = useReadContract({
     address: contractAddresses.stakeToken,
     abi: STAKING_TOKEN_ABI,
@@ -32,13 +31,11 @@ export const useAdmin = () => {
     },
   });
 
-  // Wait for transaction confirmation
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash: currentTxHash,
     });
 
-  // Check if current user is owner
   useEffect(() => {
     if (ownerAddress && account) {
       setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase());
@@ -47,7 +44,6 @@ export const useAdmin = () => {
     }
   }, [ownerAddress, account]);
 
-  // Handle transaction confirmation
   useEffect(() => {
     if (isConfirming) {
       setTxMessage("Waiting for confirmation...");
@@ -99,7 +95,6 @@ export const useAdmin = () => {
   //   }
   // };
 
-  // Transfer
   const transferTokens = async (recipientAddress, amount) => {
     if (!account || !isConnected) {
       console.error("Wallet not connected");
@@ -140,7 +135,6 @@ export const useAdmin = () => {
     }
   };
 
-  // TransferFrom
   const transferFrom = async (fromAddress, toAddress, amount) => {
     if (!account || !isConnected) {
       console.error("Wallet not connected");
@@ -183,7 +177,6 @@ export const useAdmin = () => {
     }
   };
 
-  // Mint tokens
   const mintTokens = async (recipientAddress, amount) => {
     if (!account || !isConnected) {
       console.error("Wallet not connected");
@@ -231,17 +224,13 @@ export const useAdmin = () => {
   };
 
   return {
-    // Owner status
     isOwner,
     ownerAddress,
 
-    // Transaction status
     isLoading: isLoading || isConfirming,
     txStatus,
     txMessage,
 
-    // Actions (Owner only)
-    // approveTokens,
     transferTokens,
     transferFrom,
     mintTokens,

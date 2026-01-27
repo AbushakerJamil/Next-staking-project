@@ -2,10 +2,10 @@ import "./globals.css";
 import { Providers } from "../app/provider/providers";
 import { ToastProvider } from "../app/context/ToastContext";
 
-// export const metadata = {
-//   title: "TSender",
-//   description: "Hyper gas-optimized bulk ERC20 token transfer",
-// };
+export const metadata = {
+  title: "Staking Dapps",
+  description: "Stake your tokens to earn rewards.",
+};
 
 export default function RootLayout({ children }) {
   return (
